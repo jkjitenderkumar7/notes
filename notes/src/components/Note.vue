@@ -4,11 +4,11 @@
 
     <p class="actions">
       <router-link class="back" to="/"><button><< Back</button></router-link>
-      <button v-bind:class="{ 'inactive': !changedSinceLast() }" v-on:click="save()" class="save">Save</button>
-      <button v-bind:class="{ 'inactive': !noteContent }" v-on:click="remove()" class="delete">Delete</button>
+      <button v-bind:class="{ 'inactive': !changed }" v-on:click="save" class="save">Save</button>
+      <button v-bind:class="{ 'inactive': !noteContent }" v-on:click="remove" class="delete">Delete</button>
     </p>
 
-    <textarea v-model="noteContent"></textarea>
+    <textarea v-model="noteContent" v-on:keyup="changed = true;"></textarea>
 
   </div>
 </template>
@@ -24,42 +24,45 @@
       return {
         /* Variable to store text data of a note */
         noteContent: '',
-        /* Variable to keep a copy of note data for comparison purpose */
-        prevContent: '',
-        /* Id of the note (if coming from home page to view the note details), 0 otherwise */
-        id: this.$route.params.id || 0,
+        /* Id of the note */
+        id: 0,
         /* Dynamic title to use this component for create/edit/details pages */
-        title: 'Add New Note'
+        title: 'Add New Note',
+        /* Flag to keep track if the note text has been changed */
+        changed: false
       }
     },
     created: function () {
+      /** Id is -
+       - either taken from route (existing note - edit/view mode),
+       - or, Taken as the length of note list (new note - create mode)
+      */
+      if (this.$route.params.id != undefined) {
+        this.id = this.$route.params.id;
+      } else {
+        this.id = notesService.getNotes().length;
+      }
       /* If an id is present in router, we fetch note content for that id using service*/
-      if (this.id > 0) {
+      if (this.$route.params.id != undefined) {
         this.noteContent = notesService.getNote(this.id);
-        this.prevContent = this.noteContent;
-
-        this.title = `Note Id: ${this.id}`;
+        this.title = `Note #${this.id + 1}`;
       }
     },
     methods: {
-      /* To save a note to our list. Used in edit and create cases */
+      /* Save the note in list using service */
       save: function () {
-        if (this.noteContent && this.changedSinceLast()) {
-          this.prevContent = this.noteContent;
-          this.id = notesService.updateNotes(this.noteContent, this.id);
+        if (this.noteContent) {
+          notesService.updateNotes(this.noteContent, this.id);
+          this.changed = false;
         }
       },
       /* Delete the note from list, return to home page */
       remove: function () {
         this.noteContent = '';
-        if (this.id > 0) {
-          notesService.deleteNote(this.id);
+        notesService.deleteNote(this.id);
+        if (this.$route.params.id != undefined) {
           this.$router.push({ name: 'home'});
         }
-      },
-      /* Check if note text has changes since the last time it was saved (Not checking for just input change) */
-      changedSinceLast: function () {
-        return this.prevContent != this.noteContent;
       }
     }
   }

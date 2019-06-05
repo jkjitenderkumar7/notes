@@ -5,9 +5,12 @@
     <router-link to="/add"><button>Add New Note</button></router-link>
 
     <div>
-      <ol>
-        <li v-for="(note, index) in notes"><p @click="navigateToDetail(index)">{{ note }}</p><span>x</span></li>
-    </ol>
+      <ul>
+        <li v-for="(note, index) in notes">
+          <p class="note-link" @click="navigateToDetail(index)">{{ note }}</p>
+          <span class="delete-btn" @click="deleteNote(index)">x</span>
+        </li>
+    </ul>
     </div>
   </div>
 </template>
@@ -31,8 +34,12 @@
     methods: {
       /* Navigate to specific note details using parameterized routes */
       navigateToDetail: function (index) {
-        const id = index + 1;
+        const id = index;
         this.$router.push({ name: 'view', params: { id: id } });
+      },
+      deleteNote: function (index) {
+         notesService.deleteNote(index);
+         this.notes = notesService.getNotes();
       }
     }
   }
@@ -52,16 +59,45 @@
     font-weight: bold;
     outline: none;
   }
-  ol {
+  ul {
     width: 300px;
     margin: 10px auto;
     border-top: 1px solid #42b983;
+    list-style-type: none;
+    padding: 20px 0;
+    margin: 20px auto;
   }
-  li {
+  ul li {
     text-align: left;
     color: black;
+    border: 1px solid #DBE222;
+    margin-top: -1px;
+    background-color: #DBE2E2;
+    padding: 5px;
+    font-size: 14px;
+    position: relative;
   }
-  li:hover {
+  ul li:hover {
+    background-color: #dbe2be;
+  }
+  .note-link {
+    max-height: 40px;
+    overflow: hidden;
+  }
+  .note-link:hover {
     color: #42b983;
+    cursor: pointer;
+  }
+  .delete-btn {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    right: 0%;
+    padding: 12px 16px;
+    transform: translate(0%, -50%);
+    font-weight: bold;
+  }
+  .delete-btn:hover {
+    color: red;
   }
 </style>

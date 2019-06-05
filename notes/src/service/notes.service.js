@@ -11,7 +11,7 @@ export default class NotesService {
   }
 
   getNote(id) {
-    return this.getNotes()[id -1];
+    return this.getNotes()[id];
   }
 
   getNotes() {
@@ -24,19 +24,17 @@ export default class NotesService {
 
   updateNotes(note, id) {
     const notes = this.getNotes();
-    if (id > 0) {
-      notes[id-1] = note;
-    } else {
-      notes.push(note);
-    }
+    notes[id] = note;
     this.saveNotes(notes)
     return notes.length;
   }
 
   deleteNote(id) {
     const notes = this.getNotes();
-    notes.splice(id - 1, 1);
-    this.saveNotes(notes);
+    if (notes[id]) {
+      notes.splice(id, 1);
+      this.saveNotes(notes);
+    }
   }
 
 }
