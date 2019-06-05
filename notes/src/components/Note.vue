@@ -4,7 +4,7 @@
 
     <p class="actions">
       <router-link class="back" to="/"><button><< Back</button></router-link>
-      <button v-bind:class="{ 'inactive': !changed }" v-on:click="save" class="save">Save</button>
+      <button v-bind:class="{ 'inactive': !changed || !noteContent }" v-on:click="save" class="save">Save</button>
       <button v-bind:class="{ 'inactive': !noteContent }" v-on:click="remove" class="delete">Delete</button>
     </p>
 
