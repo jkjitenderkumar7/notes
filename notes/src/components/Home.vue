@@ -7,7 +7,7 @@
     <div>
       <ul>
         <li v-for="(note, index) in notes">
-          <p class="note-link" @click="navigateToDetail(index)">{{ note }}</p>
+          <p class="note-link" @click="navigateToDetail(index)">{{ index + 1}}. {{ note }}</p>
           <span class="delete-btn" @click="deleteNote(index)">x</span>
         </li>
     </ul>
